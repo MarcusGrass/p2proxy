@@ -1,0 +1,5 @@
+# Node id: 7003b83df94765d4862185187508055e11be90d761663061e4f368d076b7a9b8
+secret_key_hex = "11701920da9f96a52625963997db5bc54e27ea86b00094646e2e860c4a8fa796"
+allow_any_peer = true
+peers = []
+server_port = 8080
