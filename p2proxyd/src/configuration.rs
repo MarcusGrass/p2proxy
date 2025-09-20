@@ -8,55 +8,14 @@ use std::str::FromStr;
 /// Run the p2proxy daemon
 #[derive(clap::Parser, Debug)]
 pub struct P2proxydCliArgs {
-    /// Path to a configuration file, if supplied together with other arguments, the arguments
-    /// will override fields from the loaded configuration.
-    #[clap(long)]
-    pub cfg_path: Option<PathBuf>,
-    /// Path to the secret key for this node.
-    /// If supplied together with `secret_key_hex` one will be picked un-deterministically.
-    #[clap(long)]
-    pub secret_key_path: Option<PathBuf>,
-    /// The hexadecimal representation of the 32-byte secret key for this node.
-    /// If supplied together with `secret_key_path` one will be picked un-deterministically.
-    #[clap(long)]
-    pub secret_key_hex: Option<String>,
-    /// Allow any peer to connect, defaults to false if omitted.
-    /// If `true` anyone that knows this node's node id can connect to it.
-    #[clap(long)]
-    pub allow_any_peer: Option<bool>,
-    /// Downstream TCP server ports. Each entry needs a corresponding name in
-    /// `server_port_names`
-    /// Ex: `3100,7777,61203`
-    #[clap(long)]
-    pub server_ports: Vec<u16>,
-    /// Mapping of names to server ports. Each entry needs a corresponding port in
-    /// `server_ports`. Only the first 16 bytes will be used (16 chars if ASCII), the
-    /// rest will be discarded silently.
-    /// Ex: `node,secret-service,high`
-    #[clap(long)]
-    pub server_port_names: Vec<String>,
-    /// A default port route, allowing clients to not have to supply (or know) what port mappings
-    /// exist. Carries the same name constraints as `server_port_names`.
-    /// Overwrites configuration if present, but not if absent.
-    pub default_route: Option<String>,
-    /// The node id of peers that are allowed to connect to this node.
-    /// Useless if `allow_any_peer == true`, mandatory if `allow_any_peer == false`.
-    /// It's assumed that nodes entered here are allowed on any port.
-    /// If more granular control is desired, use the `toml` configuration
-    #[clap(long)]
-    pub peer_node_id: Vec<iroh::NodeId>,
-    #[clap(long)]
-    pub peer_node_any_port: Vec<bool>,
-    /// If supplied, the proxy will keep an access log at the path specified.
-    /// The file will be appended to forever, employ log rotation if that behaviour is unwanted.
-    /// Ex: `/var/log/p2proxyd.log`
-    #[clap(long)]
-    pub access_log_path: Option<PathBuf>,
+    /// Path to the configuration file
+    #[clap(short, long)]
+    pub cfg_path: PathBuf,
 }
 
 impl P2proxydCliArgs {
     pub fn into_cfg(self) -> anyhow::Result<P2proxydConfig> {
-        let toml = P2proxydTomlConfig::from_args(self)?;
+        let toml = P2proxydTomlConfig::from_args(&self)?;
         P2proxydConfig::from_toml(toml).context("failed to parse p2proxyd config")
     }
 }
@@ -86,60 +45,15 @@ pub struct PeerPermission {
 }
 
 impl P2proxydTomlConfig {
-    pub fn from_args(p2proxyd_cli_args: P2proxydCliArgs) -> anyhow::Result<Self> {
-        let mut base = if let Some(cfg_path) = p2proxyd_cli_args.cfg_path {
-            let content = std::fs::read(&cfg_path).with_context(|| {
-                format!(
-                    "failed to read p2proxyd config file: {}",
-                    cfg_path.display()
-                )
-            })?;
+    pub fn from_args(p2proxyd_cli_args: &P2proxydCliArgs) -> anyhow::Result<Self> {
+        let content = std::fs::read(&p2proxyd_cli_args.cfg_path).with_context(|| {
+            format!(
+                "failed to read p2proxyd config file: {}",
+                p2proxyd_cli_args.cfg_path.display()
+            )
+        })?;
 
-            Self::parse_toml(&content)?
-        } else {
-            Self::default()
-        };
-        if p2proxyd_cli_args.secret_key_path.is_some() {
-            base.secret_key_path = p2proxyd_cli_args.secret_key_path;
-        }
-        if p2proxyd_cli_args.secret_key_hex.is_some() {
-            base.secret_key_hex = p2proxyd_cli_args.secret_key_hex;
-        }
-        if let Some(allow_any_peer) = p2proxyd_cli_args.allow_any_peer {
-            base.allow_any_peer = allow_any_peer;
-        }
-        if p2proxyd_cli_args.server_port_names.len() != p2proxyd_cli_args.server_ports.len() {
-            bail!(
-                "server port names and ports must be of the same length, they correspond to each other"
-            );
-        }
-        if let Some(default_route) = p2proxyd_cli_args.default_route {
-            base.default_route = Some(default_route);
-        }
-        let cli_ports: Vec<_> = p2proxyd_cli_args
-            .server_ports
-            .into_iter()
-            .zip(p2proxyd_cli_args.server_port_names)
-            .map(|(port, name)| ServerPortSetting { port, name })
-            .collect();
-        if !cli_ports.is_empty() {
-            base.server_ports = cli_ports;
-        }
-        if let Some(access_log_path) = p2proxyd_cli_args.access_log_path {
-            base.access_log_path = Some(access_log_path);
-        }
-        if !p2proxyd_cli_args.peer_node_id.is_empty() {
-            base.peers = p2proxyd_cli_args
-                .peer_node_id
-                .into_iter()
-                .map(|nid| PeerPermission {
-                    node_id: nid,
-                    allow_any_port: true,
-                    allow_named_ports: None,
-                })
-                .collect();
-        }
-        Ok(base)
+        Self::parse_toml(&content)
     }
 
     pub fn generate_template_to_toml() -> anyhow::Result<String> {
