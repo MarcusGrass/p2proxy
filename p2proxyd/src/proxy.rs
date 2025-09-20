@@ -17,7 +17,10 @@ pub(super) async fn run_proxy(cfg: P2proxydConfig) -> anyhow::Result<()> {
             let mapped = ServerPortMapString::try_new(p.name)?;
             Ok((
                 mapped,
-                SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), p.port),
+                SocketAddr::new(
+                    p.host_ip.unwrap_or(IpAddr::V4(Ipv4Addr::UNSPECIFIED)),
+                    p.port,
+                ),
             ))
         })
         .collect::<anyhow::Result<FxHashMap<_, _>>>()?;

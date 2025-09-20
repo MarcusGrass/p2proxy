@@ -2,6 +2,7 @@ use anyhow::{Context, bail};
 use iroh::{NodeId, SecretKey};
 use p2proxy_lib::proto::ServerPortMapString;
 use rustc_hash::FxHashSet;
+use std::net::IpAddr;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
@@ -33,6 +34,7 @@ pub struct P2proxydTomlConfig {
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct ServerPortSetting {
+    pub host_ip: Option<IpAddr>,
     pub port: u16,
     pub name: String,
 }
@@ -66,6 +68,7 @@ impl P2proxydTomlConfig {
             allow_any_peer: true,
             peers: vec![],
             server_ports: vec![ServerPortSetting {
+                host_ip: None,
                 port: 8080,
                 name: "my-http".to_string(),
             }],
