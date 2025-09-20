@@ -87,10 +87,6 @@ impl ProtocolHandler for P2ProxyProto {
                 return Err(AcceptError::NotAllowed {});
             }
         };
-        tracing::debug!(
-            "accepting connection from {nid}, allowed peers: {:?}",
-            self.allowed_peers
-        );
         if let Some(allowed_peers) = &self.allowed_peers
             && !allowed_peers.contains(&nid)
         {
