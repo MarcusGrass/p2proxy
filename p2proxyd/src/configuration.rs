@@ -111,10 +111,14 @@ impl P2proxydConfig {
         if p2proxyd_toml_config.server_ports.is_empty() {
             bail!("at least one server port must be specified");
         }
-        let default_route = p2proxyd_toml_config
-            .default_route
-            .map(ServerPortMapString::try_new)
-            .transpose()?;
+        let mut paths_unique = FxHashSet::default();
+        let default_route = if let Some(dr_path) = p2proxyd_toml_config.default_route {
+            let spm = ServerPortMapString::try_new(dr_path)?;
+            paths_unique.insert(spm.as_str().to_string());
+            Some(spm)
+        } else {
+            None
+        };
         for p in &mut p2proxyd_toml_config.server_ports {
             if p.name.len() > 16 {
                 if p.name.is_char_boundary(16) {
@@ -124,6 +128,9 @@ impl P2proxydConfig {
                     );
                 }
                 p.name.truncate(16);
+                if !paths_unique.insert(p.name.clone()) {
+                    bail!("server port name {} is not unique", p.name);
+                }
                 tracing::warn!("server port name truncated to 16 chars");
             }
         }
