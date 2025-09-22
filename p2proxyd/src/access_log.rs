@@ -42,10 +42,11 @@ impl AccessLogHandle {
         .context("failed to send rejected missing node to incoming connection log channel")
     }
 
-    pub fn log_rejected_not_allowed(
+    pub fn log_rejected_not_allowed_at(
         &self,
         address: SocketAddr,
         node_id: NodeId,
+        port: String,
     ) -> anyhow::Result<()> {
         let Some(chan) = &self.chan else {
             return Ok(());
@@ -54,7 +55,7 @@ impl AccessLogHandle {
             IncomingConnection {
                 timestamp: timestamp_try_local_offset(),
                 address,
-                result: IncomingConnectionResult::Rejected(node_id),
+                result: IncomingConnectionResult::RejectedNotAllowedPort(node_id, port),
             },
         ))
         .context("failed to send rejected to incoming connection log channel")
@@ -78,7 +79,7 @@ impl AccessLogHandle {
         .context("failed to send rejected default port to incoming connection log channel")
     }
 
-    pub fn log_rejected_bad_port_mapping(
+    pub fn log_rejected_unknown_port_mapping(
         &self,
         address: SocketAddr,
         node_id: NodeId,
@@ -91,10 +92,29 @@ impl AccessLogHandle {
             IncomingConnection {
                 timestamp: timestamp_try_local_offset(),
                 address,
-                result: IncomingConnectionResult::RejectedBadPortMapping(node_id, mapping),
+                result: IncomingConnectionResult::RejectedUnknownPortMapping(node_id, mapping),
             },
         ))
-        .context("failed to send rejected bad port mapping to incoming connection log channel")
+        .context("failed to send rejected unknown port mapping to incoming connection log channel")
+    }
+
+    pub fn log_rejected_garbage_port_mapping(
+        &self,
+        address: SocketAddr,
+        node_id: NodeId,
+        mapping: [u8; 16],
+    ) -> anyhow::Result<()> {
+        let Some(chan) = &self.chan else {
+            return Ok(());
+        };
+        chan.try_send(AccessLogWriterMessage::IncomingConnection(
+            IncomingConnection {
+                timestamp: timestamp_try_local_offset(),
+                address,
+                result: IncomingConnectionResult::RejectedGarbagePortMapping(node_id, mapping),
+            },
+        ))
+        .context("failed to send rejected garbage port mapping to incoming connection log channel")
     }
 
     pub fn log_accepted(&self, address: SocketAddr, node_id: NodeId) -> anyhow::Result<()> {
@@ -136,9 +156,10 @@ pub struct IncomingConnection {
 
 enum IncomingConnectionResult {
     MissingNodeId,
-    Rejected(NodeId),
     Accepted(NodeId),
-    RejectedBadPortMapping(NodeId, String),
+    RejectedGarbagePortMapping(NodeId, [u8; 16]),
+    RejectedUnknownPortMapping(NodeId, String),
+    RejectedNotAllowedPort(NodeId, String),
     RejectedDefaultRoute(NodeId),
 }
 
@@ -167,9 +188,22 @@ fn access_log_writer(
                     return Ok(());
                 }
             }
-            IncomingConnectionResult::Rejected(node) => {
+            IncomingConnectionResult::RejectedGarbagePortMapping(node, port_mapping) => {
                 if let Err(e) = file.write_fmt(format_args!(
-                    "{}\t[{}]\t{node}\tREJECTED\tNode not approved for connection\n",
+                    "{}\t[{}]\t{node}\tREJECTED\tNode attempted un-parseable port mapping: '{}'\n",
+                    conn.timestamp
+                        .format(&Rfc3339)
+                        .context("failed to format timestamp")?,
+                    conn.address,
+                    String::from_utf8_lossy(&port_mapping)
+                )) {
+                    tracing::error!("Failed to write to access log file: {}", display_chain(&e));
+                    return Ok(());
+                }
+            }
+            IncomingConnectionResult::RejectedUnknownPortMapping(node, port_mapping) => {
+                if let Err(e) = file.write_fmt(format_args!(
+                    "{}\t[{}]\t{node}\tREJECTED\tNode attempted missing port map: '{port_mapping}'\n",
                     conn.timestamp
                         .format(&Rfc3339)
                         .context("failed to format timestamp")?,
@@ -179,7 +213,7 @@ fn access_log_writer(
                     return Ok(());
                 }
             }
-            IncomingConnectionResult::RejectedBadPortMapping(node, port_mapping) => {
+            IncomingConnectionResult::RejectedNotAllowedPort(node, port_mapping) => {
                 if let Err(e) = file.write_fmt(format_args!(
                     "{}\t[{}]\t{node}\tREJECTED\tNode not approved for port map: '{port_mapping}'\n",
                     conn.timestamp

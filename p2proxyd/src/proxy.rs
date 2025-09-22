@@ -1,40 +1,13 @@
 use crate::access_log::AccessLogHandle;
-use crate::configuration::P2proxydConfig;
-use crate::proto::{P2ProxyProto, Routes};
+use crate::configuration::P2ProxydSetup;
+use crate::proto::P2ProxyProto;
 use anyhow::Context;
 use iroh::protocol::Router;
 use p2proxy_lib::display_chain;
-use p2proxy_lib::proto::{ALPN, ServerPortMapString};
-use rustc_hash::FxHashMap;
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use p2proxy_lib::proto::ALPN;
 
-pub(super) async fn run_proxy(cfg: P2proxydConfig) -> anyhow::Result<()> {
+pub(super) async fn run_proxy(cfg: P2ProxydSetup) -> anyhow::Result<()> {
     let nid = cfg.secret_key.public();
-    let port_map = cfg
-        .server_port
-        .into_iter()
-        .map(|p| {
-            let mapped = ServerPortMapString::try_new(p.name)?;
-            Ok((
-                mapped,
-                SocketAddr::new(
-                    p.host_ip.unwrap_or(IpAddr::V4(Ipv4Addr::UNSPECIFIED)),
-                    p.port,
-                ),
-            ))
-        })
-        .collect::<anyhow::Result<FxHashMap<_, _>>>()?;
-    let default_route = if let Some(default) = cfg.default_route {
-        Some(port_map.get(&default).copied().ok_or_else(|| {
-            anyhow::anyhow!(
-                "default route {} not found in server_port list",
-                default.as_str()
-            )
-        })?)
-    } else {
-        None
-    };
-    let routes = Routes::new(default_route, port_map);
     let endpoint = iroh::Endpoint::builder()
         .alpns(vec![ALPN.to_vec()])
         .discovery_n0()
@@ -42,9 +15,9 @@ pub(super) async fn run_proxy(cfg: P2proxydConfig) -> anyhow::Result<()> {
         .bind()
         .await
         .context("Failed to bind to endpoint")?;
-    let access_log_handle = AccessLogHandle::maybe_spawn(cfg.access_log);
+    let access_log_handle = cfg.access_log_handle;
     let al_c = access_log_handle.clone();
-    let proto = P2ProxyProto::new(cfg.peers, routes, access_log_handle);
+    let proto = P2ProxyProto::new(cfg.routes, access_log_handle);
     tracing::info!("running service with node_id={nid}");
     let router = Router::builder(endpoint).accept(ALPN, proto).spawn();
     if let Err(e) = sighand_loop(al_c).await {

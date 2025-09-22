@@ -1,4 +1,4 @@
-use crate::proto::DownstreamConnectionInheritedState;
+use crate::proto::{DownstreamConnectionInheritedState, SocketAddrGetResult};
 use anyhow::{Context, bail};
 use iroh::NodeId;
 use iroh::endpoint::{Connection, ConnectionError, RecvStream, SendStream};
@@ -83,6 +83,7 @@ fn map_con_err(e: &ConnectionError) -> anyhow::Result<&'static str> {
     }
 }
 
+#[allow(clippy::too_many_lines)]
 async fn run_proxied_tcp(
     peer: NodeId,
     remote_addr: SocketAddr,
@@ -104,38 +105,74 @@ async fn run_proxied_tcp(
             return Ok(());
         }
         p2proxy_lib::proto::DEFAULT_ROUTE => {
-            if let Some(default_route) =
-                downstream_connection_inherited_state.routes.default_route()
+            match downstream_connection_inherited_state
+                .routes
+                .default_route(&peer)
             {
-                default_route
-            } else {
-                downstream_connection_inherited_state
-                    .access_log_handle
-                    .log_rejected_default_not_present(remote_addr, peer)?;
-                let _ = upstream_write.reset(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
-                let _ = upstream_read.stop(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
-                bail!("no default route configured");
+                SocketAddrGetResult::Allowed(a) => a,
+                SocketAddrGetResult::NotAllowed => {
+                    downstream_connection_inherited_state
+                        .access_log_handle
+                        .log_rejected_not_allowed_at(
+                            remote_addr,
+                            peer,
+                            "default-route-unconfigured".to_string(),
+                        )?;
+                    let _ = upstream_write.reset(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    let _ = upstream_read.stop(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    anyhow::bail!("peer not allowed to connect to port at default route");
+                }
+                SocketAddrGetResult::NotPresent => {
+                    downstream_connection_inherited_state
+                        .access_log_handle
+                        .log_rejected_default_not_present(remote_addr, peer)?;
+                    let _ = upstream_write.reset(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    let _ = upstream_read.stop(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    bail!("no default route configured");
+                }
             }
         }
         any => {
-            let utf8_port_map =
-                core::str::from_utf8(&buf).context("invalid utf8 port name mapping")?;
-            if let Some(target_port) = downstream_connection_inherited_state
-                .routes
-                .get(utf8_port_map)
-            {
-                tracing::debug!("accepted request from upstream");
-                target_port
-            } else {
+            let Ok(utf8_port_map) = core::str::from_utf8(any) else {
                 downstream_connection_inherited_state
                     .access_log_handle
-                    .log_rejected_bad_port_mapping(remote_addr, peer, utf8_port_map.to_string())?;
+                    .log_rejected_garbage_port_mapping(remote_addr, peer, *any)?;
                 let _ = upstream_write.reset(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
                 let _ = upstream_read.stop(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
                 anyhow::bail!(
-                    "unknown port name mapping: {}",
+                    "peer attempted to connect at a non-utf8 port {}",
                     String::from_utf8_lossy(any)
                 );
+            };
+            match downstream_connection_inherited_state
+                .routes
+                .get(&peer, utf8_port_map)
+            {
+                SocketAddrGetResult::Allowed(a) => a,
+                SocketAddrGetResult::NotAllowed => {
+                    downstream_connection_inherited_state
+                        .access_log_handle
+                        .log_rejected_not_allowed_at(
+                            remote_addr,
+                            peer,
+                            utf8_port_map.to_string(),
+                        )?;
+                    let _ = upstream_write.reset(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    let _ = upstream_read.stop(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    anyhow::bail!("peer not allowed to connect to port at {utf8_port_map}");
+                }
+                SocketAddrGetResult::NotPresent => {
+                    downstream_connection_inherited_state
+                        .access_log_handle
+                        .log_rejected_unknown_port_mapping(
+                            remote_addr,
+                            peer,
+                            utf8_port_map.to_string(),
+                        )?;
+                    let _ = upstream_write.reset(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    let _ = upstream_read.stop(p2proxy_lib::proto::FORBIDDEN_QUIC_ERROR_CODE);
+                    anyhow::bail!("peer attempted to access missing port {utf8_port_map}");
+                }
             }
         }
     };

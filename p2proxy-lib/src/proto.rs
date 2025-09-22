@@ -1,6 +1,7 @@
 use anyhow::bail;
 use iroh::endpoint::VarInt;
 use std::borrow::Borrow;
+use std::fmt::Display;
 
 pub const ALPN: &[u8] = b"p2proxy_proto";
 
@@ -17,6 +18,13 @@ pub const FORBIDDEN_QUIC_ERROR_CODE: VarInt = VarInt::from_u32(2);
 #[repr(transparent)]
 #[derive(Eq, PartialEq, Hash, Debug, Clone, Default)]
 pub struct ServerPortMapString(String);
+
+impl Display for ServerPortMapString {
+    #[inline]
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
 
 impl ServerPortMapString {
     pub fn try_new(mut s: String) -> anyhow::Result<Self> {
