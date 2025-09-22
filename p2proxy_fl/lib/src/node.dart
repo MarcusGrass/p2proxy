@@ -237,10 +237,7 @@ class NodeCardState extends State<NodeCard> {
                     hintText: "port name",
                   ),
                   inputFormatters: [LengthLimitingTextInputFormatter(16)],
-                  keyboardType: TextInputType.numberWithOptions(
-                    signed: true,
-                    decimal: false,
-                  ),
+                  keyboardType: TextInputType.text,
                 ),
               ),
             ),
