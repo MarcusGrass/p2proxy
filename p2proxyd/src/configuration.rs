@@ -181,13 +181,6 @@ fn construct_routes(
                                 peer.node_id, peer_port
                             )
                         })?;
-                    if !paths_unique.contains(&spm) {
-                        bail!(
-                            "configuration error, peer={} specified an unknown named port={}",
-                            peer.node_id,
-                            peer_port
-                        );
-                    }
                     if server_port_name == spm {
                         explicit_allow_map.insert(peer.node_id);
                     }
