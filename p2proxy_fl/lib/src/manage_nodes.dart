@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:p2proxy_fl/src/colorscheme.dart';
 import 'package:p2proxy_fl/src/error_toast.dart';
 import 'package:p2proxy_fl/src/rust/api/tokens.dart';
 import 'package:p2proxy_fl/src/storage.dart';
@@ -53,10 +54,7 @@ class ManageNodeViewState extends State<ManageNodeView> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('p2proxy'),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-      ),
+      appBar: AppBar(title: const Text('Nodes'), backgroundColor: appBarColor),
       body: ListView(shrinkWrap: true, children: columnChildren),
     );
   }

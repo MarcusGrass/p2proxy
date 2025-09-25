@@ -53,10 +53,7 @@ class CreateKeyViewState extends State<CreateKeyView> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('p2proxy'),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-      ),
+      appBar: AppBar(title: const Text('Keys'), backgroundColor: appBarColor),
       body: ListView(shrinkWrap: true, children: columnChildren),
     );
   }

@@ -23,3 +23,5 @@ const Color catGreen = Color(0xffa6e3a1);
 
 const Color _defaultTextColor = Color(0xffcdd6f4);
 const TextStyle defaultText = TextStyle(color: _defaultTextColor);
+
+const Color appBarColor = Color.fromARGB(255, 108, 112, 134);

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('p2proxy'),
-          backgroundColor: Theme.of(context).colorScheme.secondary,
+          backgroundColor: appBarColor,
         ),
         body: MainView(storage: storage),
       ),
