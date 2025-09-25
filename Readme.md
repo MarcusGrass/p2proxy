@@ -66,3 +66,7 @@ See its readme for more details [here](./p2proxy-desktop/Readme.md).
 ## License
 
 This project is licensed under [GPLv3](./LICENSE).
+
+## Attribution
+
+[Feature-graphic](./assets/android-feature.png) generated with https://hotpot.ai/design/google-play-feature-graphic
