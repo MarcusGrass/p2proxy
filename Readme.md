@@ -5,14 +5,21 @@ A peer-to-peer TCP proxy built with [iroh](https://github.com/n0-computer/iroh).
 ## Serve TCP to devices, without opening extra ports, a static ip, or buying a domain
 
 I made this project to remote-control my raspberry pi. It runs a few web-servers that I want to
-visit while not on the local network. Iroh makes it possible to do that by dialing a public key.
+visit while not on the local network. Iroh makes it possible to do that by dialing a public key,
+from some other devices. Currently, there are three client implementations, a cli, a desktop app, and an
+android app. The client connects with quic, then opens a TCP-socket on localhost.
+
+In practice, this means that if you're running some web-server with the proxy attached, and a client with
+the other side of the proxy, visiting localhost is like visiting localhost on the server device.
+
+![android-demo](./assets/images/android-demo.gif)
 
 ### Daemon
 
 The project consists of a daemon running on the server-device, and a few different clients that can
-communicate with that daemon. The daemon itself is a very simple TCP-proxy with some optional access controls.
+communicate with that daemon. The daemon itself is a basic TCP-proxy with some optional access controls.
 That daemon is (through configuration) pointed to a local port, and then proxies incoming traffic to and from
-that prot.
+that port.
 
 #### Usage
 
@@ -24,7 +31,6 @@ The simplest possible configuration looks like this:
 ```toml
 # Node id: 7003b83df94765d4862185187508055e11be90d761663061e4f368d076b7a9b8
 secret_key_hex = "11701920da9f96a52625963997db5bc54e27ea86b00094646e2e860c4a8fa796"
-allow_any_peer = true
 default_route = "default"
 
 [[server_ports]]
@@ -58,11 +64,11 @@ For more usage/configuration of the daemon, see [its readme](./p2proxyd/Readme.m
 An android app `p2proxy` is currently under review,
 it can be used to connect to a remote `p2proxyd` service.
 
-![image](assets/images/android.png)
+![android-screenshot](assets/images/android.png)
 
 ## Desktop app
 
-![image](assets/images/demo-proxy-desktop.png)
+![desktop-screenshot](assets/images/demo-proxy-desktop.png)
 
 See its readme for more details [here](./p2proxy-desktop/Readme.md).
 
@@ -103,4 +109,5 @@ This project is licensed under [GPLv3](./LICENSE).
 
 ## Attribution
 
-[Feature-graphic](assets/images/android-feature.png) generated with https://hotpot.ai/design/google-play-feature-graphic
+[Android feature-graphic](assets/images/android-feature.png) generated
+with https://hotpot.ai/design/google-play-feature-graphic
