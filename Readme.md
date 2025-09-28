@@ -66,6 +66,37 @@ it can be used to connect to a remote `p2proxyd` service.
 
 See its readme for more details [here](./p2proxy-desktop/Readme.md).
 
+## Building
+
+To build, you need a rust toolchain, you can get one [through rustup](https://rust-lang.org/tools/install/) for
+example.
+
+You need `libglib2.0-dev` and `libgtk-3-dev` to build the desktop app. The proxy and cli does not need these
+extra dependencies (as far as I'm aware).
+
+### Daemon
+
+`cargo b -r -p p2proxyd`, binary ends up in `target/release/p2proxyd`
+
+### CLI
+
+`cargo b -r -p p2proxy-cli`, binary ends up in `target/release/p2proxy-cli`
+
+### Desktop
+
+`cargo b -r -p p2proxy-desktop`, binary ends up in `target/release/p2proxy-desktop`
+
+### Android app
+
+Can be built using flutter:
+
+To build release, you need to set up signing-configs,
+[see the flutter docs](https://docs.flutter.dev/deployment/android#configure-signing-in-gradle)
+
+```shell
+cd p2proxy_fl && flutter build appbundle --debug
+```
+
 ## License
 
 This project is licensed under [GPLv3](./LICENSE).
