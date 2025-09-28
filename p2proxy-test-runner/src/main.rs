@@ -23,6 +23,7 @@ async fn main() -> anyhow::Result<()> {
         eprintln!("server at 4503:");
         test_server_4503.dump_output().await;
     }
-
+    simple_res?;
+    extensive_res?;
     Ok(())
 }
