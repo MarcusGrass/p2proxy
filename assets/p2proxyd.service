@@ -1,0 +1,13 @@
+[Unit]
+Description="P2proxyd service"
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=<user>
+ExecStart=/home/<user>/.local/bin/p2proxyd run --cfg-path <path>
+
+[Install]
+WantedBy=multi-user.target

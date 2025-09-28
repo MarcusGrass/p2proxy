@@ -1,0 +1,37 @@
+# [unstable]
+# codegen-backend = true
+
+#[profile.dev]
+# codegen-backend = "cranelift"
+
+#[profile.dev.package."*"]
+# codegen-backend = "llvm"
+
+[profile.remote]
+panic = "abort" # No std requirement
+inherits = "release"
+debug = false # Inherits from release so should actually do nothing but whatever
+strip = true # smaller binary
+
+[profile.lto]
+panic = "abort" # No std requirement
+codegen-units = 1 # Better optimization
+debug = false # Inherits from release so should actually do nothing but whatever
+inherits = "release"
+lto = true # link time optimization
+strip = true # smaller binary
+
+[profile.bench]
+inherits = "release"
+debug = true
+
+[target.'cfg(not(target_family = "wasm"))']
+rustflags = '--cfg tokio_unstable'
+
+# [target.x86_64-unknown-linux-gnu]
+# linker = "clang"
+# rustflags = ["-C", "link-arg=-fuse-ld=/usr/bin/mold", "-Zshare-generics=y"]
+
+
+[target.wasm32-unknown-unknown]
+rustflags = '--cfg getrandom_backend="wasm_js"'

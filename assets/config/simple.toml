@@ -1,0 +1,8 @@
+# Node id: 7c32ab7cdd9a4e2651c9eff072958a43a9b411cc5b69603a1dca6d7d843f2406
+secret_key_hex = "8c3981f6f98d0a09f69931549a883d8ce1c37fbf767c28ace12c81ede4713bfc"
+default_route = "default"
+
+[[server_ports]]
+port = 4501
+name = "default"
+allow_any_peer = true

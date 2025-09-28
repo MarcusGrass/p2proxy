@@ -1,0 +1,128 @@
+[graph]
+targets = [
+    { triple = "x86_64-unknown-linux-gnu" },
+    { triple = "aarch64-unknown-linux-gnu" },
+    { triple = "aarch64-apple-darwin" },
+    { triple = "x86_64-pc-windows-gnu" },
+    { triple = "x86_64-pc-windows-msvc" },
+    { triple = "i686-pc-windows-msvc" },
+    { triple = "i686-unknown-linux-gnu" },
+]
+
+[advisories]
+ignore = [
+    { id = "RUSTSEC-2024-0436", reason = "paste unmaintained, pulled in through iced and iroh" },
+    { id = "RUSTSEC-2024-0420", reason = "unmaintained gtk3-bindings pulled in through rfd" },
+    { id = "RUSTSEC-2024-0418", reason = "unmaintained gdk3-bindings pulled in through rfd" },
+    { id = "RUSTSEC-2024-0416", reason = "unmaintained atk-bindings pulled in through rfd (gtk3)" },
+]
+
+[bans]
+multiple-versions = "deny"
+deny = [
+]
+skip = [
+    { name = "bitflags", version = "=1.3.2" },
+    { name = "block2", version = "=0.5.1" },
+    { name = "core-foundation", version = "=0.9.4" },
+    { name = "core-graphics-types", version = "=0.1.3" },
+    { name = "derive_more", version = "=1.0.0" },
+    { name = "derive_more-impl", version = "=1.0.0" },
+    { name = "getrandom", version = "=0.2.16" },
+    { name = "hashbrown", version = "=0.14.5" },
+    { name = "hashbrown", version = "=0.15.5" },
+    { name = "lru", version = "=0.13.0" },
+    { name = "rand", version = "=0.8.5" },
+    { name = "rand_chacha", version = "=0.3.1" },
+    { name = "rand_core", version = "=0.6.4" },
+    { name = "rustc-hash", version = "=1.1.0" },
+    { name = "serde_spanned", version = "=0.6.9" },
+    { name = "socket2", version = "=0.5.10" },
+    { name = "spin", version = "=0.9.8" },
+    { name = "syn", version = "=1.0.109" },
+    { name = "thiserror", version = "=1.0.69" },
+    { name = "thiserror-impl", version = "=1.0.69" },
+    { name = "toml", version = "=0.8.23" },
+    { name = "toml_datetime", version = "=0.6.11" },
+    { name = "toml_edit", version = "=0.22.27" },
+    { name = "ttf-parser", version = "=0.20.0" },
+    { name = "ttf-parser", version = "=0.21.1" },
+    { name = "webpki-roots", version = "=0.26.11" },
+    # Windows swamp
+    { name = "windows_x86_64_msvc", version = "=0.48.5" },
+    { name = "windows_x86_64_msvc", version = "=0.52.6" },
+    { name = "windows_x86_64_gnu", version = "=0.48.5" },
+    { name = "windows_x86_64_gnu", version = "=0.52.6" },
+    { name = "windows_i686_msvc", version = "=0.48.5" },
+    { name = "windows_i686_msvc", version = "=0.52.6" },
+    { name = "windows_i686_gnu", version = "=0.48.5" },
+    { name = "windows_i686_gnu", version = "=0.52.6" },
+    { name = "windows-targets", version = "=0.48.5" },
+    { name = "windows-targets", version = "=0.52.6" },
+    { name = "windows-interface", version = "=0.58.0" },
+    { name = "windows-implement", version = "=0.58.0" },
+    { name = "windows-core", version = "=0.58.0" },
+    { name = "windows-core", version = "=0.61.2" },
+    { name = "windows", version = "=0.58.0" },
+    { name = "windows-sys", version = "=0.48.0" },
+    { name = "windows-sys", version = "=0.52.0" },
+    { name = "windows-sys", version = "=0.59.0" },
+    { name = "windows-sys", version = "=0.60.2" },
+    { name = "windows-strings", version = "=0.1.0" },
+    { name = "windows-strings", version = "=0.4.2" },
+    { name = "windows-link", version = "=0.1.3" },
+    { name = "windows-result", version = "=0.2.0" },
+    { name = "windows-result", version = "=0.3.4" },
+    # Much smaller apple-swamp
+    { name = "objc2", version = "=0.5.2" },
+    { name = "objc2-foundation", version = "=0.2.2" },
+    { name = "objc2-app-kit", version = "=0.2.2" },
+    # Linux swamp
+    { name = "rustix", version = "=0.38.44" },
+    { name = "linux-raw-sys", version = "=0.4.15" },
+]
+
+[sources]
+allow-git = [
+    "https://github.com/iced-rs/iced",
+    "https://github.com/iced-rs/cryoglyph",
+    "https://github.com/iced-rs/winit",
+    "https://github.com/MarcusGrass/iroh",
+]
+
+[licenses]
+confidence-threshold = 1.0
+# I have nothing against other licenses, but I'm curious to know when they come
+# into the dependency graph
+allow = [
+    "Apache-2.0",
+    "MIT",
+    "Unicode-3.0",
+    "BSD-3-Clause",
+]
+exceptions = [
+    { name = "hexf-parse", allow = ["CC0-1.0"] },
+    { name = "clipboard-win", allow = ["BSL-1.0"] },
+    { name = "error-code", allow = ["BSL-1.0"] },
+    { name = "arrayref", allow = ["BSD-2-Clause"] },
+    { name = "attohttpc", allow = ["MPL-2.0"] },
+    { name = "foldhash", allow = ["Zlib"] },
+    { name = "slotmap", allow = ["Zlib"] },
+    { name = "target-lexicon", allow = ["Apache-2.0 WITH LLVM-exception"] },
+    { name = "bounded-integer", allow = ["ISC"] },
+    { name = "hmac-sha256", allow = ["ISC"] },
+    { name = "libloading", allow = ["ISC"] },
+    { name = "ring", allow = ["ISC"] },
+    { name = "rustls-webpki", allow = ["ISC"] },
+    { name = "untrusted", allow = ["ISC"] },
+    { name = "webpki-roots", allow = ["CDLA-Permissive-2.0"] },
+    # Internal
+    { name = "p2proxy-cli", allow = ["GPL-3.0"] },
+    { name = "p2proxy-client", allow = ["GPL-3.0"] },
+    { name = "p2proxy-desktop", allow = ["GPL-3.0"] },
+    { name = "p2proxy-lib", allow = ["GPL-3.0"] },
+    { name = "p2proxy-test-runner", allow = ["GPL-3.0"] },
+    { name = "p2proxy-test-server", allow = ["GPL-3.0"] },
+    { name = "p2proxyd", allow = ["GPL-3.0"] },
+    { name = "rust_lib_p2proxy_fl", allow = ["GPL-3.0"] },
+]

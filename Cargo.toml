@@ -1,0 +1,47 @@
+[workspace]
+members = ["p2proxy-cli", "p2proxy-client", "p2proxy-desktop", "p2proxy-lib", "p2proxyd", "p2proxy_fl/rust", "p2proxy-test-server", "p2proxy-test-runner"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+license = "GPL-3.0"
+
+[workspace.dependencies]
+p2proxy-client = { path = "./p2proxy-client" }
+p2proxy-lib = { path = "./p2proxy-lib" }
+
+android_logger = "0.15.1"
+anyhow = { version = "1.0.99" }
+axum = { version = "0.8.4" }
+clap = { version = "4.5.47", features = ["env", "derive"] }
+env_filter = "0.1.3"
+futures = "0.3.31"
+hex = "0.4.3"
+iced = { git = "https://github.com/iced-rs/iced", rev = "a9091f9edd9462b22fc4a95f7b23654de32a8f3f", default-features = false, features = ["tokio", "thread-pool", "crisp", "web-colors", "wgpu"] }
+iced_core = { git = "https://github.com/iced-rs/iced", rev = "a9091f9edd9462b22fc4a95f7b23654de32a8f3f", default-features = false }
+iroh = { git = "https://github.com/MarcusGrass/iroh.git", rev = "e444e51995396f5633d13b7ac1ff24448eda34a0" }
+iroh-base = { git = "https://github.com/MarcusGrass/iroh.git", rev = "e444e51995396f5633d13b7ac1ff24448eda34a0" }
+log = "0.4.28"
+opener = "0.8.3"
+oslog = "0.2.0"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = { version = "1.0.143" }
+rand = "0.8.5"
+reqwest = { version = "0.12.23", default-features = false, features = [] }
+rfd = { version = "0.15.4", default-features = false, features = ["tokio", "gtk3"] }
+rustc-hash = "2.1.1"
+thiserror = "2.0.16"
+time = { version = "0.3.43", features = ["formatting", "local-offset"] }
+tokio = { version = "1.47.1", default-features = false, features = ["macros"] }
+toml = "0.9.5"
+tracing = { version = "0.1.41" }
+tracing-subscriber = { version = "0.3.20" }
+
+[workspace.lints.clippy]
+pedantic = { priority = -1, level = "warn" }
+missing_errors_doc = "allow"
+struct_field_names = "allow"
+similar_names = "allow"
+len_without_is_empty = "allow"
+implicit_hasher = "allow"
+new_without_default = "allow"
