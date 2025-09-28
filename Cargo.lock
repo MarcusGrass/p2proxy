@@ -3884,7 +3884,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxy-cli"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -3900,7 +3900,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxy-client"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "iroh",
@@ -3912,7 +3912,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxy-desktop"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "hex",
@@ -3931,7 +3931,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxy-lib"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "iroh",
@@ -3941,7 +3941,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxy-test-runner"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "hex",
@@ -3953,7 +3953,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxy-test-server"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "axum",
  "tokio",
@@ -3961,7 +3961,7 @@ dependencies = [
 
 [[package]]
 name = "p2proxyd"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -4729,7 +4729,7 @@ checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
 
 [[package]]
 name = "rust_lib_p2proxy_fl"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "android_logger",
  "anyhow",
