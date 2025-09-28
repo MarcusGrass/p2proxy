@@ -1,11 +1,6 @@
 # Keys for testing and examples
-f0c2a21b86797e243e3a3b2e273b7f53d4a950a7:assets/config/extensive.toml:generic-api-key:2
-f0c2a21b86797e243e3a3b2e273b7f53d4a950a7:assets/config/simple.toml:generic-api-key:2
-f0c2a21b86797e243e3a3b2e273b7f53d4a950a7:p2proxyd/Readme.md:generic-api-key:55
-f0c2a21b86797e243e3a3b2e273b7f53d4a950a7:p2proxyd/Readme.md:generic-api-key:73
-f0c2a21b86797e243e3a3b2e273b7f53d4a950a7:Readme.md:generic-api-key:26
-0f1bd60d610e7721a3b4994e1be03c598bb73f49:Readme.md:generic-api-key:26
-0f1bd60d610e7721a3b4994e1be03c598bb73f49:assets/config/extensive.toml:generic-api-key:2
-0f1bd60d610e7721a3b4994e1be03c598bb73f49:assets/config/simple.toml:generic-api-key:2
-0f1bd60d610e7721a3b4994e1be03c598bb73f49:p2proxyd/Readme.md:generic-api-key:55
-0f1bd60d610e7721a3b4994e1be03c598bb73f49:p2proxyd/Readme.md:generic-api-key:73
+44e161fd06967f9c71b3f5c95e82729a54ae0d70:assets/config/extensive.toml:generic-api-key:2
+44e161fd06967f9c71b3f5c95e82729a54ae0d70:Readme.md:generic-api-key:26
+44e161fd06967f9c71b3f5c95e82729a54ae0d70:assets/config/simple.toml:generic-api-key:2
+44e161fd06967f9c71b3f5c95e82729a54ae0d70:p2proxyd/Readme.md:generic-api-key:55
+44e161fd06967f9c71b3f5c95e82729a54ae0d70:p2proxyd/Readme.md:generic-api-key:73
