@@ -61,7 +61,7 @@ For more usage/configuration of the daemon, see [its readme](./p2proxyd/Readme.m
 
 ## Android app
 
-An android app `p2proxy` is currently under review,
+An android app `p2proxy` [can be found here](https://play.google.com/store/apps/details?id=dev.mgrass.p2proxy),
 it can be used to connect to a remote `p2proxyd` service.
 
 ![android-screenshot](assets/images/android.png)
