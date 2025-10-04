@@ -3,6 +3,7 @@ name = "p2proxy-cli"
 version = { workspace = true }
 edition = { workspace = true }
 license = { workspace = true }
+description = "A cli to host a local server which connects to a p2proxyd proxy"
 
 [dependencies]
 p2proxy-lib = { workspace = true }
@@ -19,3 +20,13 @@ tracing-subscriber = { workspace = true }
 
 [lints]
 workspace = true
+
+[package.metadata.deb]
+maintainer = "Marcus Grass <marcus.grass@protonmail.com>"
+copyright = "2025, Marcus Grass"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/p2proxy-cli", "usr/bin/", "755"],
+    ["Readme.md", "usr/share/doc/p2proxy-cli/README", "644"]
+]

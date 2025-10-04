@@ -77,7 +77,7 @@ See its readme for more details [here](./p2proxy-desktop/Readme.md).
 To build, you need a rust toolchain, you can get one [through rustup](https://rust-lang.org/tools/install/) for
 example.
 
-You need `libglib2.0-dev` and `libgtk-3-dev` to build the desktop app. The proxy and cli does not need these
+You need `libglib2.0-dev` and `libgtk-3-dev` to build the desktop app (on linux). The proxy and cli does not need these
 extra dependencies (as far as I'm aware).
 
 ### Daemon
@@ -98,6 +98,19 @@ Can be built using flutter:
 
 To build release, you need to set up signing-configs,
 [see the flutter docs](https://docs.flutter.dev/deployment/android#configure-signing-in-gradle)
+
+## Downloading
+
+For targets that are easy to build for and test with a VM (`generic linux`, `debian`, and `windows`) signed
+binaries/packages
+are supplied under releases.
+
+`p2proxyd` and `p2proxy-cli` can (and are) compiled statically for Linux in both cases. `p2proxy-desktop` has a
+dependency on `libgtk` and `libglib`, so that's compiled on debian `bullseye` for compatibility. It should work
+on any reasonably up-to-date linux install.
+
+I'm assuming that windows users won't run `p2proxyd`, but there's no technical reason that that can't be built
+or run on windows either.
 
 ```shell
 cd p2proxy_fl && flutter build appbundle --debug
