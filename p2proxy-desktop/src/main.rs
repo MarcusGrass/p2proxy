@@ -1,3 +1,4 @@
+#![cfg_attr(target_family = "windows", windows_subsystem = "windows")]
 mod observability;
 mod peer_id;
 mod peer_node_state;
