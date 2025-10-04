@@ -5,6 +5,7 @@ resolver = "3"
 [workspace.package]
 edition = "2024"
 license = "GPL-3.0"
+version = "1.0.1"
 
 [workspace.dependencies]
 p2proxy-client = { path = "./p2proxy-client" }
